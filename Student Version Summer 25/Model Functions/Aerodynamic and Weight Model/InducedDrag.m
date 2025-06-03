@@ -41,28 +41,34 @@ for n = 1:Count
     %Find CL min Drag value of wing drag polar to estimate k2
     [CD_min,CD_min_index] = min(WingDragCurve{n,:});
     CL_minD = WingLiftCurve{n,CD_min_index};
-    AR = b^2/s;
+    
+    s = Design_Input.Sref_w; %wing area
+    AR = Design_Input.AR_w; %wing aspect ratio
     %Cavallo Oswalds Model 1 (Baseline required)
     Model1_Name = 'Cavallo'; %Name of first Oswald's Model
-    eo_mod1(n) = 1.78*(1-0.045*(AR^0.68)) - 0.64;
-    k1_mod1(n) = 1 / (pi*eo_mod1*AR);
-    k2_mod1(n) = -2*k1_mod1*CL_minD;
+    eo_mod1(n) = 1.78*  (1 - 0.045 * ( AR^0.68 ) ) - 0.64;
+    k1_mod1(n) = 1 / (pi*eo_mod1(n)*AR);
+    k2_mod1(n) = -2*k1_mod1(n)*CL_minD;
 
     %Student Option Oswalds Model 2 
     Model2_Name = 'Kroo'; %Name of second Oswald's Model
     u = 0.99;
     K = 0.38; 
-    Q(n) = 1/ u*s;
-    P(n) = K*CD_0;
+    Q = 1/ u*s;
+    P = K*Parasite_Drag_Data.CDo;
     eo_mod2(n) = 1 / (Q + P*pi*AR);
-    k1_mod2(n) = 1 / (pi*eo_mod1*AR);
-    k2_mod2(n) = -2*k1_mod1*CL_minD;
+    k1_mod2(n) = 1 / (pi*eo_mod2(n)*AR);
+    k2_mod2(n) = -2*k1_mod2(n)*CL_minD;
    
     %Student Option Oswalds Model 3
-    Model3_Name = 'Horner'; %Name of third Oswald's Model
+    Model3_Name = 'Obert'; %Name of third Oswald's Model
+    % Q = 1.03;
+    % P = K*Airfoil.Cd_0;
+    Q = 1.05;
+    P = 0.007;
     eo_mod3(n) = 1 / (Q + P*pi*AR);
-    k1_mod3(n) = 1 / (pi*eo_mod1*AR);
-    k2_mod3(n) = -2*k1_mod1*CL_minD;
+    k1_mod3(n) = 1 / (pi*eo_mod3(n)*AR);
+    k2_mod3(n) = -2*k1_mod3(n)*CL_minD;
 
 % /////////////////////////////////////////////////////////////////////////
 % END OF SECTION TO MODIFY

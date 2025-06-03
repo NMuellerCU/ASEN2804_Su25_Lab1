@@ -117,19 +117,19 @@ Material_Data = readtable(Design_Input_Filename,'Sheet','Materials'); %Read in p
 
 %% Calculations - Lift and Drag
 % Call Wing Lift & Drag Model Function
-    Plot_Wing_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 200 - 299)
+    Plot_Wing_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 200 - 299)
     [WingLiftModel,AoA,AoA_Count,AirfoilLiftCurve,WingLiftCurve,WingDragCurve] =...
        WingLiftDrag(Design_Input,Airfoil,Count,Benchmark,Plot_Wing_Data); 
 
 % Call Parasite Drag Buildup Model Function
-    Plot_Parasite_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 300 - 399)
-    %[Parasite_Drag_Data,FF_Table,Q_Table,Re_Table] = ...
-    %    ParasiteDrag(Design_Input,Airfoil,WingGeo_Data,ATMOS,Count,Plot_Parasite_Data);
+    Plot_Parasite_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 300 - 399)
+    [Parasite_Drag_Data,FF_Table,Q_Table,Re_Table] = ...
+       ParasiteDrag(Design_Input,Airfoil,WingGeo_Data,ATMOS,Count,Plot_Parasite_Data);
 
 % Call Induced Drag Model Function
-    Plot_Induced_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 400 - 499)
-    %InducedDrag_Data = ...
-    %    InducedDrag(Design_Input,WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data,Count,Benchmark,Plot_Induced_Data);
+    Plot_Induced_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 400 - 499)
+    InducedDrag_Data = ...
+       InducedDrag(Design_Input,WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data,Count,Benchmark,Plot_Induced_Data);
 
 % Call Complete Drag Polar Function
     Plot_DragPolar_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 500 - 599)

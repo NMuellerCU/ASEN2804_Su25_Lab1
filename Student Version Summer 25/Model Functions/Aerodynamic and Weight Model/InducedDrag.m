@@ -29,45 +29,58 @@ k1_mod3 = zeros(Count, 1); % k1 for Model #3
 k2_mod1 = zeros(Count, 1); % k2 for Model #1
 k2_mod2 = zeros(Count, 1); % k2 for Model #2
 k2_mod3 = zeros(Count, 1); % k2 for Model #3
+e = zeros(Count, 1); % Span efficiency factor
 
 % NOTE: k2 values not required if only symmetric airfoils used; however,
 % this version of the code includes it as an option
 
 %% Loop through different configurations
+calculatek1 = @(eo, AR) 1 / (pi * eo * AR);
+calculatek2 = @(k1, min_CL) -2 * k1 * min_CL;
 for n = 1:Count 
 % /////////////////////////////////////////////////////////////////////////
 % MODIFY THIS SECTION
 % /////////////////////////////////////////////////////////////////////////
     %Find CL min Drag value of wing drag polar to estimate k2
     [CD_min,CD_min_index] = min(WingDragCurve{n,:});
-    CL_minD = WingLiftCurve{n,CD_min_index};
-    
-    s = Design_Input.Sref_w; %wing area
-    AR = Design_Input.AR_w(n); %wing aspect ratio
+    CL_minD = WingLiftCurve{n, CD_min_index};
+    AR = Design_Input.AR_w(1);
+
     %Cavallo Oswalds Model 1 (Baseline required)
     Model1_Name = 'Cavallo'; %Name of first Oswald's Model
-    eo_mod1(n) = 1.78*  (1 - 0.045 * ( AR^0.68 ) ) - 0.64;
-    k1_mod1(n) = 1 / (pi*eo_mod1(n)*AR);
-    k2_mod1(n) = -2*k1_mod1(n)*CL_minD;
+    eo_mod1(n) = 1.78 * (1 - 0.045 * AR^0.68) - 0.64;
+    k1_mod1(n) = calculatek1(eo_mod1(n), AR);
+    k2_mod1(n) = calculatek2(k1_mod1(n), CL_minD);
 
     %Student Option Oswalds Model 2 
     Model2_Name = 'Kroo'; %Name of second Oswald's Model
-    u = 0.99;
-    K = 0.38; 
-    Q = 1/ u*s;
-    P = K*Parasite_Drag_Data.CDo;
-    eo_mod2(n) = 1 / (Q + P*pi*AR);
-    k1_mod2(n) = 1 / (pi*eo_mod2(n)*AR);
-    k2_mod2(n) = -2*k1_mod2(n)*CL_minD;
 
+    % Find u which is equal to span efficiency factor
+    f_taper = 0.0524*Design_Input.Taper_w(n)^4-0.15*Design_Input.Taper_w(n)^3+0.1659*Design_Input.Taper_w(n)^2-0.0706*Design_Input.Taper_w(n)+0.0119;
+    u_kroo = 1 / (1 + f_taper * Design_Input.AR_w(n));
+    if Design_Input.QuarterSweep_w(n) ~= 0
+        u_kroo = u_kroo * cosd(Design_Input.QuarterSweep_w(n));
+    end
+
+    % Back calculate wingspan since it is not given
+    b_squared = AR * Design_Input.Sref_w;
+    s_kroo = 1 - 2 * (Design_Input.Dia_f^2 / b_squared);
+    Q_kroo = 1 / (u_kroo * s_kroo);
+    K = 0.38;
+    P = K * Parasite_Drag_Data.CDo;
+
+    eo_mod2(n) = 1 / (Q_kroo + P * pi * AR);
+    k1_mod2(n) = calculatek1(eo_mod2(n), AR);
+    k2_mod2(n) = calculatek2(k1_mod2(n), CL_minD);
    
     %Student Option Oswalds Model 3
-    Model3_Name = 'Schaufelle' ; %Name of third Oswald's Model
-    Q = 1.03;
-    P = K*Parasite_Drag_Data.CDo;
-    eo_mod3(n) = 1 / (Q + P*pi*AR);
-    k1_mod3(n) = 1 / (pi*eo_mod3(n)*AR);
-    k2_mod3(n) = -2*k1_mod3(n)*CL_minD;
+    Model3_Name = 'Schaufele'; %Name of third Oswald's Model
+
+    Q_schaufele = 1.03;
+
+    eo_mod3(n) = 1 / (Q_schaufele + P * pi * AR);
+    k1_mod3(n) = calculatek1(eo_mod3(n), AR);
+    k2_mod3(n) = calculatek2(k1_mod3(n), CL_minD);
 
 % /////////////////////////////////////////////////////////////////////////
 % END OF SECTION TO MODIFY

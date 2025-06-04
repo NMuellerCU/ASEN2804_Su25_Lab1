@@ -43,7 +43,7 @@ for n = 1:Count
     CL_minD = WingLiftCurve{n,CD_min_index};
     
     s = Design_Input.Sref_w; %wing area
-    AR = Design_Input.AR_w; %wing aspect ratio
+    AR = Design_Input.AR_w(n); %wing aspect ratio
     %Cavallo Oswalds Model 1 (Baseline required)
     Model1_Name = 'Cavallo'; %Name of first Oswald's Model
     eo_mod1(n) = 1.78*  (1 - 0.045 * ( AR^0.68 ) ) - 0.64;
@@ -59,13 +59,12 @@ for n = 1:Count
     eo_mod2(n) = 1 / (Q + P*pi*AR);
     k1_mod2(n) = 1 / (pi*eo_mod2(n)*AR);
     k2_mod2(n) = -2*k1_mod2(n)*CL_minD;
+
    
     %Student Option Oswalds Model 3
-    Model3_Name = 'Obert'; %Name of third Oswald's Model
-    % Q = 1.03;
-    % P = K*Airfoil.Cd_0;
-    Q = 1.05;
-    P = 0.007;
+    Model3_Name = 'Schaufelle' ; %Name of third Oswald's Model
+    Q = 1.03;
+    P = K*Parasite_Drag_Data.CDo;
     eo_mod3(n) = 1 / (Q + P*pi*AR);
     k1_mod3(n) = 1 / (pi*eo_mod3(n)*AR);
     k2_mod3(n) = -2*k1_mod3(n)*CL_minD;

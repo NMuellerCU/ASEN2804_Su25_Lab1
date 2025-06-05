@@ -110,7 +110,7 @@ if Plot_Induced_Data == 1
         plot(WingLiftCurve{n,:},CDi_w,'--');
         plot(WingLiftCurve{n,:},CDi_mod1);
         plot(WingLiftCurve{n,:},CDi_mod2);
-        plot(WingLiftCurve{n,:},CDi_mod3);
+        plot(WingLiftCurve{n,:},CDi_mod3, '--');
         %plot(WingLiftCurve{1,:},CDi_benchmark,'--');
         xlabel('Coefficient of Lift (CL) [ ]');
         ylabel('Induced Drag (CDi) [ ]');

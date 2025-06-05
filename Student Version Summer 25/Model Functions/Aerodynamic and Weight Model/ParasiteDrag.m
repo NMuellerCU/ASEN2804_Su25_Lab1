@@ -1,4 +1,4 @@
-function [Parasite_Data,FF_Table,Q_Table,Re_Table] = ...
+            function [Parasite_Data,FF_Table,Q_Table,Re_Table] = ...
     ParasiteDrag(Design_Input,Airfoil,WingGeo_Data,ATMOS,Count,Plot_Parasite_Data)
 %%  Parasite Drag Summary
 % This function performs the Raymer Component Drag Buildup Method to
@@ -109,6 +109,13 @@ for n = 1:Count
     end
     %% Misc. and L&P Contributions to CDo
     if Design_Input.Abase_f(n)~=0 % If this component exists:
+        % switch n
+        %     case 1
+        % 
+        %     case 2
+        %     case 3
+        %     otherwise
+        % 
         D_q_base = (0.139+0.419*((Design_Input.V_o(n)/ATMOS.a(n))-0.161)^2)*Design_Input.Abase_f(n);
         CDo_misc(n) = D_q_base/Design_Input.Sref_w(n); %Contribution of base drag to CDo
     end

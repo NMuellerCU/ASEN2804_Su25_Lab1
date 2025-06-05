@@ -29,7 +29,6 @@ k1_mod3 = zeros(Count, 1); % k1 for Model #3
 k2_mod1 = zeros(Count, 1); % k2 for Model #1
 k2_mod2 = zeros(Count, 1); % k2 for Model #2
 k2_mod3 = zeros(Count, 1); % k2 for Model #3
-e = zeros(Count, 1); % Span efficiency factor
 
 % NOTE: k2 values not required if only symmetric airfoils used; however,
 % this version of the code includes it as an option
@@ -44,7 +43,7 @@ for n = 1:Count
     %Find CL min Drag value of wing drag polar to estimate k2
     [CD_min,CD_min_index] = min(WingDragCurve{n,:});
     CL_minD = WingLiftCurve{n, CD_min_index};
-    AR = Design_Input.AR_w(1);
+    AR = Design_Input.AR_w(n);
 
     %Cavallo Oswalds Model 1 (Baseline required)
     Model1_Name = 'Cavallo'; %Name of first Oswald's Model
@@ -57,17 +56,17 @@ for n = 1:Count
 
     % Find u which is equal to span efficiency factor
     f_taper = 0.0524*Design_Input.Taper_w(n)^4-0.15*Design_Input.Taper_w(n)^3+0.1659*Design_Input.Taper_w(n)^2-0.0706*Design_Input.Taper_w(n)+0.0119;
-    u_kroo = 1 / (1 + f_taper * Design_Input.AR_w(n));
+    u_kroo = 1 / (1 + f_taper * Design_Input.AR_w(n, 1));
     if Design_Input.QuarterSweep_w(n) ~= 0
         u_kroo = u_kroo * cosd(Design_Input.QuarterSweep_w(n));
     end
 
     % Back calculate wingspan since it is not given
-    b_squared = AR * Design_Input.Sref_w;
-    s_kroo = 1 - 2 * (Design_Input.Dia_f^2 / b_squared);
+    b_squared = AR * Design_Input.Sref_w(n);
+    s_kroo = 1 - 2 * (Design_Input.Dia_f(n)^2 / b_squared);
     Q_kroo = 1 / (u_kroo * s_kroo);
     K = 0.38;
-    P = K * Parasite_Drag_Data.CDo;
+    P = K * Parasite_Drag_Data.CDo(n);
 
     eo_mod2(n) = 1 / (Q_kroo + P * pi * AR);
     k1_mod2(n) = calculatek1(eo_mod2(n), AR);

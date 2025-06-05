@@ -1,0 +1,3 @@
+# gitignore for xlsx files and asv files that should be ignored
+*.asv
+*.xlsx

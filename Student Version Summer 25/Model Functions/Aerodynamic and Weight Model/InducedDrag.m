@@ -76,7 +76,7 @@ for n = 1:Count
     Model3_Name = 'Schaufele'; %Name of third Oswald's Model
 
     Q_schaufele = 1.03;
-
+    
     eo_mod3(n) = 1 / (Q_schaufele + P * pi * AR);
     k1_mod3(n) = calculatek1(eo_mod3(n), AR);
     k2_mod3(n) = calculatek2(k1_mod3(n), CL_minD);

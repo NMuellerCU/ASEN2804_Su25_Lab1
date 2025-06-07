@@ -99,9 +99,8 @@ InducedDrag_Data = table(eo_mod1, eo_mod2, eo_mod3, k1_mod1, k1_mod2, k1_mod3, k
 
  %Isolated Induced Drag Coefficients
 
- CDi_w{n} = (WingLiftCurve{n,:}').^2/...
-
- (pi*WingLiftModel.e(n)*Design_Input.AR_w(1));
+ CDi_w{n} = (WingLiftCurve{n,:}').^2/ ...
+    (pi*WingLiftModel.e(n)*Design_Input.AR_w(1));
 
  CDi_mod1{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod1(n)...
 

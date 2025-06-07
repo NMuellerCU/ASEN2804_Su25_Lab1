@@ -58,6 +58,14 @@ Benchmark = readtable(Design_Input_Filename,'Sheet','Benchmark_Truth'); %Read in
 
 % Import Material Properties Data
 Material_Data = readtable(Design_Input_Filename,'Sheet','Materials'); %Read in prototyp material densities for weight model
+%% Import and read Truth Data
+Truth_Data_Filename = "Aircraft Benchmarking Truth Data for Milestone 1 (Summer).xlsx";
+
+Truth_Data_Tempest = readtable(Truth_Data_Filename, 'Sheet','Tempest CFD Drag Polar Truth', 'Range', 'A1:C19'); %reads in the truth data for tempest
+
+Truth_Data_Cessna = readtable(Truth_Data_Filename, 'Sheet','Cessna Drag Polar Truth', 'Range','A17:B98'); %reads in the truth data for tempest
+
+Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','BOEING BACJ Airfoil Data', 'Range', 'A1:C20'); %reads in the truth data for tempest
 
 %% Quick Explainer - Tables
 % This code heavily utilizes tables for data organization. You should think
@@ -122,7 +130,7 @@ Material_Data = readtable(Design_Input_Filename,'Sheet','Materials'); %Read in p
        WingLiftDrag(Design_Input,Airfoil,Count,Benchmark,Plot_Wing_Data); 
 
 % Call Parasite Drag Buildup Model Function
-    Plot_Parasite_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 300 - 399)
+    Plot_Parasite_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 300 - 399)
     [Parasite_Drag_Data,FF_Table,Q_Table,Re_Table] = ...
        ParasiteDrag(Design_Input,Airfoil,WingGeo_Data,ATMOS,Count,Plot_Parasite_Data);
 

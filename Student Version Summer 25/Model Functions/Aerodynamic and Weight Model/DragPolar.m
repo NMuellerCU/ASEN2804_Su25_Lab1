@@ -1,5 +1,5 @@
 function [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] =...
-    DragPolar(Parasite_Drag_Data,InducedDrag_Data,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data)
+    DragPolar(Parasite_Drag_Data,InducedDrag_Data,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data, Truth_Data_Tempest, Truth_Data_Cessna, Truth_Data_Boeing)
 %% Drag Polar Summary
 % Creates an array for each drag polar model with total CD value. 
 % Columns are each configuration tested, rows are variation with angle of
@@ -43,6 +43,7 @@ DragPolar_mod3 = array2table(DragPolar_mod3);
 DragPolar_mod3.Properties.VariableNames = AoA_Names;
 
 %% Plots for this function (Figure 500 - 599)
+
 if Plot_DragPolar_Data == 1
 
     % Drag Polar Comparison Curves per Configuration
@@ -54,12 +55,25 @@ if Plot_DragPolar_Data == 1
         plot(WingLiftCurve{n,:},DragPolar_mod1{n,:});
         plot(WingLiftCurve{n,:},DragPolar_mod2{n,:});
         plot(WingLiftCurve{n,:},DragPolar_mod3{n,:});
+        %plot(Parasite_Drag_Data)
+        switch n
+            case 1
+                plot(Truth_Data_Tempest{:,2}, Truth_Data_Tempest{:,3});
+                Polar_Data_Name = "Tempest Polar Data";
+            case 2
+                plot(Truth_Data_Cessna{:,1}, Truth_Data_Cessna{:,2});
+                Polar_Data_Name = "Cessna Polar Data";
+            case 3
+                plot(Truth_Data_Boeing{:,2}, Truth_Data_Boeing{:,3});
+                Polar_Data_Name = "Boeing Polar Data";
+            otherwise
+        end
         %plot(Benchmark.CL(:),Benchmark.CD(:),'--'); %Only plot if doing benchmarking; Comment out if assessing design configurations
         xlabel('Coefficient of Lift (CL) [ ]');
         ylabel('Coefficient of Drag (CD) [ ]');
         title(sprintf('Drag Polar Model Comparison Config: %d', n));
         %legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3','Benchmark Drag Polar','Location','northwest');
-        legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3','Location','northwest');
+        legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3',Polar_Data_Name, 'Location','northwest');
         grid on
         hold off
     end

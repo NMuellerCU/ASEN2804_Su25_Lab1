@@ -30,6 +30,7 @@ k2_mod1 = zeros(Count, 1); % k2 for Model #1
 k2_mod2 = zeros(Count, 1); % k2 for Model #2
 k2_mod3 = zeros(Count, 1); % k2 for Model #3
 
+
 % NOTE: k2 values not required if only symmetric airfoils used; however,
 % this version of the code includes it as an option
 
@@ -144,6 +145,7 @@ if Plot_Induced_Data == 1
 
  %plot(WingLiftCurve{1,:},CDi_benchmark,'--');
 
+
  xlabel('Coefficient of Lift (CL) [ ]');
 
  ylabel('Induced Drag (CDi) [ ]');
@@ -152,7 +154,7 @@ if Plot_Induced_Data == 1
 
  %legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Benchmark','Location','southeast');
 
- legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Location','southeast');
+ legend('3D Wing',Model1_Name,Model2_Name,Model3_Name, 'Location','southeast');
 
  grid on
 

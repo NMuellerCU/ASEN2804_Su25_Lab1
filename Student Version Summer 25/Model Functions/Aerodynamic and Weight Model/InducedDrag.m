@@ -82,49 +82,93 @@ for n = 1:Count
     k2_mod3(n) = calculatek2(k1_mod3(n), CL_minD);
 
 % /////////////////////////////////////////////////////////////////////////
+
 % END OF SECTION TO MODIFY
-% /////////////////////////////////////////////////////////////////////////   
-end
+
+% ///////////////////////////////////////////////////////////////////////// 
+
+
+
+
 
 %% Oraganize into table for output
+
 InducedDrag_Data = table(eo_mod1, eo_mod2, eo_mod3, k1_mod1, k1_mod2, k1_mod3, k2_mod1, k2_mod2, k2_mod3);
 
+
+
  %Isolated Induced Drag Coefficients
-    CDi_w = (WingLiftCurve{1,:}').^2/...
-        (pi*WingLiftModel.e(1)*Design_Input.AR_w(1));
-    CDi_mod1 = (WingLiftCurve{1,:}').^2.*InducedDrag_Data.k1_mod1(n)...
-        +InducedDrag_Data.k2_mod1(1).*((WingLiftCurve{1,:}'));
-    CDi_mod2 = (WingLiftCurve{1,:}').^2.*InducedDrag_Data.k1_mod2(n)...
-        +InducedDrag_Data.k2_mod2(1).*((WingLiftCurve{1,:}'));
-    CDi_mod3 = (WingLiftCurve{1,:}').^2.*InducedDrag_Data.k1_mod3(n)...
-        +InducedDrag_Data.k2_mod3(1).*((WingLiftCurve{1,:}'));
-    CDi_benchmark = Benchmark.CD-min(Benchmark.CD); % subtract off minCD to get CDi
+
+ CDi_w{n} = (WingLiftCurve{n,:}').^2/...
+
+ (pi*WingLiftModel.e(n)*Design_Input.AR_w(1));
+
+ CDi_mod1{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod1(n)...
+
+ +InducedDrag_Data.k2_mod1(n).*((WingLiftCurve{n,:}'));
+
+ CDi_mod2{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod2(n)...
+
+ +InducedDrag_Data.k2_mod2(n).*((WingLiftCurve{n,:}'));
+
+ CDi_mod3{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod3(n)...
+
+ +InducedDrag_Data.k2_mod3(n).*((WingLiftCurve{n,:}'));
+
+ CDi_benchmark{n} = Benchmark.CD-min(Benchmark.CD); % subtract off minCD to get CDi
+
+
+
+end
 
 %% Plots for this function (Figure 400 - 499)
+
 if Plot_Induced_Data == 1
-    
-    % CDi comparison for different Oswalds Models
-    for n=1:Count
-        figure(399+n)
-        hold on
-        plot(WingLiftCurve{n,:},CDi_w,'--');
-        plot(WingLiftCurve{n,:},CDi_mod1);
-        plot(WingLiftCurve{n,:},CDi_mod2);
-        plot(WingLiftCurve{n,:},CDi_mod3, '--');
-        %plot(WingLiftCurve{1,:},CDi_benchmark,'--');
-        xlabel('Coefficient of Lift (CL) [ ]');
-        ylabel('Induced Drag (CDi) [ ]');
-        title(sprintf('Induced Drag (CDi) Modeling Config: %d', n));
-        %legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Benchmark','Location','southeast');
-        legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Location','southeast');
-        grid on
-        hold off
-    end
-    
-    % Reset default color order
-    set(0,'DefaultAxesColorOrder','default')
-end
+
+ 
+
+ % CDi comparison for different Oswalds Models
+
+ for n=1:Count
+
+ figure(399+n)
+
+ hold on
+
+ plot(WingLiftCurve{n,:},CDi_w{n},'--');
+
+ plot(WingLiftCurve{n,:},CDi_mod1{n});
+
+ plot(WingLiftCurve{n,:},CDi_mod2{n});
+
+ plot(WingLiftCurve{n,:},CDi_mod3{n});
+
+ %plot(WingLiftCurve{1,:},CDi_benchmark,'--');
+
+ xlabel('Coefficient of Lift (CL) [ ]');
+
+ ylabel('Induced Drag (CDi) [ ]');
+
+ title(sprintf('Induced Drag (CDi) Modeling Config: %d', n));
+
+ %legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Benchmark','Location','southeast');
+
+ legend('3D Wing',Model1_Name,Model2_Name,Model3_Name,'Location','southeast');
+
+ grid on
+
+ hold off
+
+ end
+
+ 
+
+ % Reset default color order
+
+ set(0,'DefaultAxesColorOrder','default')
 
 end
 
 
+
+end

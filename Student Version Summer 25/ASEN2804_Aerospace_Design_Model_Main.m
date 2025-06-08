@@ -65,7 +65,7 @@ Truth_Data_Tempest = readtable(Truth_Data_Filename, 'Sheet','Tempest CFD Drag Po
 
 Truth_Data_Cessna = readtable(Truth_Data_Filename, 'Sheet','Cessna Drag Polar Truth', 'Range','A17:B98'); %reads in the truth data for tempest
 
-Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','BOEING BACJ Airfoil Data', 'Range', 'A1:C20'); %reads in the truth data for tempest
+Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Polar (Exp)', 'Range', 'M2:N27'); %reads in the truth data for tempest
 
 %% Quick Explainer - Tables
 % This code heavily utilizes tables for data organization. You should think

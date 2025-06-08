@@ -102,7 +102,20 @@ if Plot_Wing_Data == 1
     
     %Wing Lift Curves
     for n=1:Count
+<<<<<<< HEAD
         h = figure(199+n);
+=======
+        switch n
+            case 1
+                Vehicle_Name = 'Tempest';
+            case 2
+                Vehicle_Name = 'Cessna 172';
+            case 3
+                Vehicle_Name = 'Boeing 747';
+            otherwise
+        end
+        figure(199+n)
+>>>>>>> 4b251c1 (fixed boeing plots, improved clarity on all plots)
         hold on
         plot(AoA,Airfoil{n,(5:22)},'--','Color',"#4DBEEE");
         plot(AoA,AirfoilLiftCurve{n,:},'Color',"#A2142F");
@@ -110,7 +123,7 @@ if Plot_Wing_Data == 1
         % plot(Benchmark.AoA(:),Benchmark.CL(:),'--','Color',"#77AC30");
         xlabel('Angle of Attack [deg]');
         ylabel('Coefficient of Lift (CL) [ ]');
-        title(sprintf('Lift Curve Slope Modeling Config: %d', n));
+        title(sprintf('Lift Curve Slope Modeling %s', Vehicle_Name));
         legend('Airfoil Data','Airfoil Fit','Wing Model','Location','southeast');
         % legend('Airfoil Data','Airfoil Fit','Wing Model','Benchmark Aircraft','Location','southeast');
         grid on

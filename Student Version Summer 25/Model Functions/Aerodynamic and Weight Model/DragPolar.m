@@ -51,27 +51,30 @@ if Plot_DragPolar_Data == 1
         h=figure(499+n);
         hold on
         plot(AirfoilLiftCurve{n,:},Airfoil{n,(24:41)});
-        plot(WingLiftCurve{n,:},WingDragCurve{n,:},'--');
-        plot(WingLiftCurve{n,:},DragPolar_mod1{n,:});
-        plot(WingLiftCurve{n,:},DragPolar_mod2{n,:});
-        plot(WingLiftCurve{n,:},DragPolar_mod3{n,:});
+        plot(WingLiftCurve{n,:},WingDragCurve{n,:},'--', LineWidth=2);
+        plot(WingLiftCurve{n,:},DragPolar_mod1{n,:}, LineWidth=1.5);
+        plot(WingLiftCurve{n,:},DragPolar_mod2{n,:},':d', LineWidth=1.5);
+        plot(WingLiftCurve{n,:},DragPolar_mod3{n,:},'--', LineWidth=1.5);
         %plot(Parasite_Drag_Data)
         switch n
             case 1
                 plot(Truth_Data_Tempest{:,2}, Truth_Data_Tempest{:,3});
                 Polar_Data_Name = "Tempest Polar Data";
+                Vehicle_Name = "Tempest";
             case 2
                 plot(Truth_Data_Cessna{:,1}, Truth_Data_Cessna{:,2});
                 Polar_Data_Name = "Cessna Polar Data";
+                Vehicle_Name = "Cessna 172";
             case 3
-                plot(Truth_Data_Boeing{:,2}, Truth_Data_Boeing{:,3});
+                plot(Truth_Data_Boeing{:,1}, Truth_Data_Boeing{:,2});
                 Polar_Data_Name = "Boeing Polar Data";
+                Vehicle_Name = "Boeing 747";
             otherwise
         end
         %plot(Benchmark.CL(:),Benchmark.CD(:),'--'); %Only plot if doing benchmarking; Comment out if assessing design configurations
         xlabel('Coefficient of Lift (CL) [ ]');
         ylabel('Coefficient of Drag (CD) [ ]');
-        title(sprintf('Drag Polar Model Comparison Config: %d', n));
+        title(sprintf('Drag Polar Model Comparison for %s', Vehicle_Name));
         %legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3','Benchmark Drag Polar','Location','northwest');
         legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3',Polar_Data_Name, 'Location','northwest');
         grid on

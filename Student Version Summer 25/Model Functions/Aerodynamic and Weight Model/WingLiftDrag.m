@@ -102,7 +102,7 @@ if Plot_Wing_Data == 1
     
     %Wing Lift Curves
     for n=1:Count
-        figure(199+n)
+        h = figure(199+n);
         hold on
         plot(AoA,Airfoil{n,(5:22)},'--','Color',"#4DBEEE");
         plot(AoA,AirfoilLiftCurve{n,:},'Color',"#A2142F");
@@ -114,6 +114,7 @@ if Plot_Wing_Data == 1
         legend('Airfoil Data','Airfoil Fit','Wing Model','Location','southeast');
         % legend('Airfoil Data','Airfoil Fit','Wing Model','Benchmark Aircraft','Location','southeast');
         grid on
+        saveas(h, sprintf('FIG%d.png', n+199));
         hold off
     end
     

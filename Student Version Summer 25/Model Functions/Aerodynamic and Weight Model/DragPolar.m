@@ -48,7 +48,7 @@ if Plot_DragPolar_Data == 1
 
     % Drag Polar Comparison Curves per Configuration
     for n=1:Count
-        figure(499+n)
+        h=figure(499+n);
         hold on
         plot(AirfoilLiftCurve{n,:},Airfoil{n,(24:41)});
         plot(WingLiftCurve{n,:},WingDragCurve{n,:},'--');
@@ -75,6 +75,7 @@ if Plot_DragPolar_Data == 1
         %legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3','Benchmark Drag Polar','Location','northwest');
         legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3',Polar_Data_Name, 'Location','northwest');
         grid on
+        saveas(h, sprintf('FIG%d.png', n+499));
         hold off
     end
     

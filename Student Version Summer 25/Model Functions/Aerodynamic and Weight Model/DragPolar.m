@@ -1,5 +1,5 @@
 function [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] =...
-    DragPolar(Parasite_Drag_Data,InducedDrag_Data,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data, Truth_Data_Tempest, Truth_Data_Cessna, Truth_Data_Boeing)
+    DragPolar(Parasite_Drag_Data,InducedDrag_Data, InducedDrag_Model_Names,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data, Truth_Data_Tempest, Truth_Data_Cessna, Truth_Data_Boeing)
 %% Drag Polar Summary
 % Creates an array for each drag polar model with total CD value. 
 % Columns are each configuration tested, rows are variation with angle of
@@ -56,11 +56,12 @@ if Plot_DragPolar_Data == 1
         plot(WingLiftCurve{n,:},DragPolar_mod2{n,:},':d', LineWidth=1.5);
         plot(WingLiftCurve{n,:},DragPolar_mod3{n,:},'--', LineWidth=1.5);
         %plot(Parasite_Drag_Data)
+        %% Switch case for different planes polar truth data
         switch n
             case 1
-                plot(Truth_Data_Tempest{:,2}, Truth_Data_Tempest{:,3});
-                Polar_Data_Name = "Tempest Polar Data";
-                Vehicle_Name = "Tempest";
+                plot(Truth_Data_Tempest{:,2}, Truth_Data_Tempest{:,3}); %gets truth data from import in the main file
+                Polar_Data_Name = "Tempest Polar Data";%sets up name for legend
+                Vehicle_Name = "Tempest";%sets up name for title
             case 2
                 plot(Truth_Data_Cessna{:,1}, Truth_Data_Cessna{:,2});
                 Polar_Data_Name = "Cessna Polar Data";
@@ -71,12 +72,18 @@ if Plot_DragPolar_Data == 1
                 Vehicle_Name = "Boeing 747";
             otherwise
         end
+        %% sets up name strings for lend drag polar models
+        %i did this to avoid calling them just "model 1" "model 2", for
+        %more clarity 
+        DragMod1_Name = sprintf("Drag Polar %s Model", InducedDrag_Model_Names{1});
+        DragMod2_Name = sprintf("Drag Polar %s Model", InducedDrag_Model_Names{2});
+        DragMod3_Name = sprintf("Drag Polar %s Model", InducedDrag_Model_Names{3});
         %plot(Benchmark.CL(:),Benchmark.CD(:),'--'); %Only plot if doing benchmarking; Comment out if assessing design configurations
-        xlabel('Coefficient of Lift (CL) [ ]');
-        ylabel('Coefficient of Drag (CD) [ ]');
+        xlabel('Coefficient of Lift (CL)');
+        ylabel('Coefficient of Drag (CD)');
         title(sprintf('Drag Polar Model Comparison for %s', Vehicle_Name));
         %legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3','Benchmark Drag Polar','Location','northwest');
-        legend('Airfoil Drag Polar','Wing Drag Polar','Drag Polar-Mod1','Drag Polar-Mod2','Drag Polar-Mod3',Polar_Data_Name, 'Location','northwest');
+        legend('Airfoil Drag Polar','Wing Drag Polar', DragMod1_Name, DragMod2_Name, DragMod3_Name, Polar_Data_Name, 'Location','northwest');
         grid on
         saveas(h, sprintf('FIG%d.png', n+499));
         hold off

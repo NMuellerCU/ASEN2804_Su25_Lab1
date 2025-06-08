@@ -1,4 +1,4 @@
-function [InducedDrag_Data] =...
+function [InducedDrag_Data, InducedDrag_Model_Names] =...
     InducedDrag(Design_Input,WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data,Count,Benchmark,Plot_Induced_Data)
 %% Induced Drag Model Function Summary
 % This function evaluates different Oswalds Efficiency Factor models for 
@@ -95,7 +95,7 @@ for n = 1:Count
 %% Oraganize into table for output
 
 InducedDrag_Data = table(eo_mod1, eo_mod2, eo_mod3, k1_mod1, k1_mod2, k1_mod3, k2_mod1, k2_mod2, k2_mod3);
-
+InducedDrag_Model_Names = {Model1_Name, Model2_Name, Model3_Name};
 
 
  %Isolated Induced Drag Coefficients

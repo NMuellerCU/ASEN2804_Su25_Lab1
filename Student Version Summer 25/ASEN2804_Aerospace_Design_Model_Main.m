@@ -136,13 +136,13 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 
 % Call Induced Drag Model Function
     Plot_Induced_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 400 - 499)
-    InducedDrag_Data = ...
+    [InducedDrag_Data,InducedDrag_Model_Names] = ...
        InducedDrag(Design_Input,WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data,Count,Benchmark,Plot_Induced_Data);
 
 % Call Complete Drag Polar Function
     Plot_DragPolar_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 500 - 599)
     [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
-        DragPolar(Parasite_Drag_Data,InducedDrag_Data,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data, Truth_Data_Tempest, Truth_Data_Cessna, Truth_Data_Boeing);
+        DragPolar(Parasite_Drag_Data,InducedDrag_Data, InducedDrag_Model_Names,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,Count,Plot_DragPolar_Data, Truth_Data_Tempest, Truth_Data_Cessna, Truth_Data_Boeing);
 
 % Call L/D Analysis Function
     Plot_LD_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 600 - 699)

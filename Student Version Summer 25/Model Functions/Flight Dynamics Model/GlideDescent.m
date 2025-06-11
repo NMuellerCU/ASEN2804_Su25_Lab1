@@ -66,13 +66,13 @@ end
 GlideData = table(bestGlide, LDmax, theta, CL_LDmax, V_LDmax, Vsink, AoA_LDmax, WingLoad);
 
 %% Plots for this function (Figure 1000 - 1099)
+
+if Plot_Glide_Data == 1
     % Some setup to make plots more readable in color, look up the
     % documentation for 'cmap' for other color map options
     cmap = colormap(lines(Count));
     set(0,'DefaultAxesColorOrder',cmap)
     set(gca(),'ColorOrder',cmap);
-
-if Plot_Glide_Data == 1
 
     % Glide Flight 2D Profile Plots
     figure(1000)

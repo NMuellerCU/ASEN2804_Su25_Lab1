@@ -81,7 +81,7 @@ for n = 1:Count
     eo_mod3(n) = 1 / (Q_schaufele + P * pi * AR);
     k1_mod3(n) = calculatek1(eo_mod3(n), AR);
     k2_mod3(n) = calculatek2(k1_mod3(n), CL_minD);
-
+    
 % /////////////////////////////////////////////////////////////////////////
 
 % END OF SECTION TO MODIFY

@@ -104,12 +104,15 @@ InducedDrag_Model_Names = {Model1_Name, Model2_Name, Model3_Name};
     (pi*WingLiftModel.e(n)*Design_Input.AR_w(1));
 
  CDi_mod1{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod1(n)...
+
  +InducedDrag_Data.k2_mod1(n).*((WingLiftCurve{n,:}'));
 
  CDi_mod2{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod2(n)...
+
  +InducedDrag_Data.k2_mod2(n).*((WingLiftCurve{n,:}'));
 
  CDi_mod3{n} = (WingLiftCurve{n,:}').^2.*InducedDrag_Data.k1_mod3(n)...
+
  +InducedDrag_Data.k2_mod3(n).*((WingLiftCurve{n,:}'));
 
  CDi_benchmark{n} = Benchmark.CD-min(Benchmark.CD); % subtract off minCD to get CDi

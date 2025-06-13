@@ -145,7 +145,10 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 % data for use in this model)
     Plot_Glide_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 1000 - 1099)
     LD_Model = LD_mod3; %You must select one LD model output (from the LD function outputs) to utilize for this analysis
-    apogee = [3.4;3.4;3.4;3.4;3.4;3.4;3.4;3.4]; %Use to set starting altitude of glide 
+    apogee = 17 * ones(8,1); %Use to set starting altitude of glide 
+    %LD_Model = LD_mod1; %You must select one LD model output (from the LD function outputs) to utilize for this analysis
+    apogee = ones(Count,1)*17.5; %Use to set starting altitude of glide 
+
     %boost-ascent functions and only analyzing glide performance
     [GlideData] = GlideDescent(LD_Model, apogee, Design_Input, ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,Count,Plot_Glide_Data); %Must select LD of your best model
 
@@ -158,6 +161,17 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 % Call Boost-Ascent Flight Dynamics Model
     % Plot_Boost_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 900 - 999)
     % [apogee, hApogee, StateStruct] = BoostAscent(Design_Input, ATMOS, Parasite_Drag_Data, Weight_Data, ThrustCurves, Time, Count, g,Plot_Boost_Data);
+
+
+%% sensitivity modeling
+%the exact name of the variable you want to model sensitivity of:
+SensVar = 'AR_w';
+%the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
+ModelRow = 3; 
+
+Plot_Sensitivity_Data = 1;
+ [SensitivityData] = ...
+     SensitivityModeling(Design_Input,WingGeo_Data,Airfoil,ATMOS,Count,SensVar, ModelRow, Material_Data,Plot_Sensitivity_Data);
 
 
 %% Calculations - Stability Model (NOTE: THIS WORKS FOR GLIDER)

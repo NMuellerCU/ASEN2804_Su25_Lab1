@@ -1,5 +1,6 @@
 function [SensitivityData] =...
-    SensitivityModeling(Design_Input,WingGeo_Data,Airfoil,ATMOS,Count,SensVar, ModelRow, Material_Data,Plot_Sensitivity_Data)
+    SensitivityModeling(Design_Input,WingGeo_Data,Airfoil,ATMOS,SensVar, ModelRow, Material_Data,Plot_Sensitivity_Data, WingLiftModel, WingLiftCurve, WingDragCurve, Benchmark, AoA_Count,AirfoilLiftCurve, Component_Data)
+
 %% Sensitivity Data Summary:
 % takes in all data and a variable that we will be performing sensitivity
 % analysis on, and then shows plots of different variables vs that
@@ -11,7 +12,7 @@ Design_Input = Design_Input(ModelRow,:);
 WingGeo_Data = WingGeo_Data(ModelRow,:);
 Airfoil = Airfoil(ModelRow,:);
 
-baseVal = Design_Input.(SensVar);
+baseVal = double(Design_Input.(SensVar));
 
 %THIS IS THE RANGE YOU CHOSE, please modify this if you want a different
 %range (Note: its in percent, ex: -0.8 is -80% of the original value)
@@ -38,11 +39,27 @@ Re_Table = cell(n,1);
 switch SensVar
     case {'AR_w','Taper_w','Sref_w'}
         Design_Mod = repmat(Design_Input,n,1); %prealocates all of the modified Design_Inputs
+        apogee = ones(n,1)*17.5;  %for glideDescent.m
         for i = 1:n
             Design_Mod(i,:).(SensVar)(1) = SensVarRange(i);
 
             [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
               ParasiteDrag(Design_Mod(i,:), Airfoil, WingGeo_Data, ATMOS, 1, 0);
+
+            [InducedDrag_Data,InducedDrag_Model_Names] = ...
+                InducedDrag(Design_Mod(i,:),WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data_Mod{i},1,Benchmark,0);
+
+            [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
+                DragPolarV(Parasite_Drag_Data_Mod{i},InducedDrag_Data, InducedDrag_Model_Names,Design_Mod(i,:),AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,1,0);
+            
+            [LD_mod1,~,~,~] = ...
+                LD(Benchmark,DragPolar_mod1,DragPolar_mod2,DragPolar_mod3,WingLiftCurve,WingDragCurve,AoA_Count,1,0);
+
+            [Weight_Data,~] = ...
+                Weight(Design_Mod(i,:),1,WingGeo_Data,Airfoil,Material_Data,Component_Data,9.81,0);
+            
+ 
+            [GlideData_Mod(i,:)] = GlideDescent(LD_mod1, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
 
             secWing(i) = computeSecWing(Design_Mod(i,:), Airfoil, Material_Data);
 
@@ -50,16 +67,34 @@ switch SensVar
 
     case {'Fuse_Mat', 'Length_f','Dia_f'}
         Design_Mod = repmat(Design_Input,n,1); %prealocates all of the modified Design_Inputs
+        apogee = ones(n,1)*17.5; 
 
         for i = 1:n
             Design_Mod(i,:).(SensVar)(1) = SensVarRange(i);
+            [WingLiftModel,AoA,AoA_Count,AirfoilLiftCurve,WingLiftCurve,WingDragCurve] =...
+                    WingLiftDrag(Design_Mod(i,:),Airfoil,1,Benchmark,Plot_Wing_Data); 
 
-            [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
+                        [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
               ParasiteDrag(Design_Mod(i,:), Airfoil, WingGeo_Data, ATMOS, 1, 0);
+
+            [InducedDrag_Data,InducedDrag_Model_Names] = ...
+                InducedDrag(Design_Mod(i,:),WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data_Mod{i},1,Benchmark,0);
+
+            [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
+                DragPolarV(Parasite_Drag_Data_Mod{i},InducedDrag_Data, InducedDrag_Model_Names,Design_Mod(i,:),AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,1,0);
+            
+            [LD_mod1,~,~,~] = ...
+                LD(Benchmark,DragPolar_mod1,DragPolar_mod2,DragPolar_mod3,WingLiftCurve,WingDragCurve,AoA_Count,1,0);
+
+            [Weight_Data,~] = ...
+                Weight(Design_Mod(i,:),1,WingGeo_Data,Airfoil,Material_Data,Component_Data,9.81,0);
+            
+
+            [GlideData_Mod(i,:)] = GlideDescent(LD_mod1, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
 
             secFuse(i) = computeSecFuse(Design_Mod(i,:), Airfoil, Material_Data);
         end
-     
+        
     case {'Thick_w'}
         Airfoil_Mod = repmat(Airfoil,n,1); %prealocates all of the modified Design_Inputs
 
@@ -75,10 +110,11 @@ switch SensVar
     otherwise
       error('SensitivityModeling:UnknownVar',...
             'Unknown sensitivity variable "%s"', SensVar);
-    
+
 end
 SensitivityData.SensVarRange = SensVarRange;
 SensitivityData.ParasiteDragData = Parasite_Drag_Data_Mod;
+SensitivityData.GlideDescent = GlideData_Mod;
 % SensitivityData.FFTable = FF_Table; %uncomment these if you need their data
 % SensitivityData.QTable = Q_Table;
 % SensitivityData.ReTable = Re_Table;
@@ -88,40 +124,75 @@ SensitivityData.FuseSecondaries = secFuse;
 
 %% Plotting
 if Plot_Sensitivity_Data == 1
-  wingVars = {'AR_w','Taper_w','Sref_w','Thick_w'};   % whatever you use
-  fuseVars = {'Fuse_Mat','Length_f','Dia_f','Amax_f','Abase_f'};
+      wingVars = {'AR_w','Taper_w','Sref_w','Thick_w'};   % whatever you use
+      fuseVars = {'Fuse_Mat','Length_f','Dia_f','Amax_f','Abase_f'};
+      
+    if ismember(SensVar, wingVars)
+        % List of wing metrics to plot
+        wingMetrics = {'b','cr','ct','V_box','W_box','Load_w'};
+        for k = 1:numel(wingMetrics)
+            m = wingMetrics{k};
+            Y = [secWing.(m)];  % extract data vector
+    
+            figure('Name',m,'NumberTitle','off');
+            plot(SensVarRange, Y, '-o');
+            xlabel(SensVar, 'Interpreter','none');
+            ylabel(m,      'Interpreter','none');
+            title(['Sensitivity of ', m, ' to ', SensVar], 'Interpreter','none');
+            grid on;
 
-if ismember(SensVar, wingVars)
-    % List of wing metrics to plot
-    wingMetrics = {'b','cr','ct','V_box','W_box','Load_w'};
-    for k = 1:numel(wingMetrics)
-        m = wingMetrics{k};
-        Y = [secWing.(m)];  % extract data vector
 
-        figure('Name',m,'NumberTitle','off');
-        plot(SensVarRange, Y, '-o');
-        xlabel(SensVar, 'Interpreter','none');
-        ylabel(m,      'Interpreter','none');
-        title(['Sensitivity of ', m, ' to ', SensVar], 'Interpreter','none');
-        grid on;
+        end
+        figure(1); clf;    
+        n = numel(SensVarRange);
+        cmap = colormap([linspace(0,1,n)',linspace(1,0,n)', linspace(1,0,n)']);
+        ax = axes;          
+        hold(ax, 'on');
+        for i = 1:numel(GlideData_Mod.bestGlide) %coppied and pasted code from GlideDescent.m
+            plot(ax,...
+                [0, GlideData_Mod.bestGlide(i)], [apogee(i), 0],...
+                'Color',cmap(i, :), 'DisplayName',sprintf('AR = %.2f best glide', SensVarRange(i)))
+        end
+        xlabel('Glide distance [m]');
+        ylabel('Height [m]');
+        title('Best Glide Plots');
+        legend();
+        grid on
+        hold off
     end
-
-elseif ismember(SensVar, fuseVars)
-    % List of fuselage metrics to plot
-    fuseMetrics = {'V_max','W_max'};
-    for k = 1:numel(fuseMetrics)
-        m = fuseMetrics{k};
-        Y = [secFuse.(m)];  % extract data vector
-
-        figure('Name',m,'NumberTitle','off');
-        plot(SensVarRange, Y, '-s');
-        xlabel(SensVar, 'Interpreter','none');
-        ylabel(m,      'Interpreter','none');
-        title(['Sensitivity of ', m, ' to ', SensVar], 'Interpreter','none');
-        grid on;
+    
+    elseif ismember(SensVar, fuseVars)
+        % List of fuselage metrics to plot
+        fuseMetrics = {'V_max','W_max'};
+        for k = 1:numel(fuseMetrics)
+            m = fuseMetrics{k};
+            Y = [secFuse.(m)];  % extract data vector
+    
+            figure('Name',m,'NumberTitle','off');
+            plot(SensVarRange, Y, '-s');
+            xlabel(SensVar, 'Interpreter','none');
+            ylabel(m,      'Interpreter','none');
+            title(['Sensitivity of ', m, ' to ', SensVar], 'Interpreter','none');
+            grid on;
+        end
+        
+        figure(1); clf;    
+        n = numel(SensVarRange);
+        cmap = colormap([linspace(0,1,n)',linspace(1,0,n)', linspace(1,0,n)']);
+        ax = axes;          
+        hold(ax, 'on');
+        for i = 1:numel(GlideData_Mod.bestGlide) %coppied and pasted code from GlideDescent.m
+            plot(ax,...
+                [0, GlideData_Mod.bestGlide(i)], [apogee(i), 0],...
+                'Color',cmap(i, :), 'DisplayName',sprintf('AR = %.2f best glide', SensVarRange(i)))
+        end
+        xlabel('Glide distance [m]');
+        ylabel('Height [m]');
+        title('Best Glide Plots');
+        legend();
+        grid on
+        hold off
     end
-end
-end
 end
 
 

@@ -42,7 +42,7 @@ addpath(genpath('Design Input Files'));
 addpath(genpath('Model Functions'));
 
 %% Import and Read Aircraft Design File
-Design_Input_Filename = "Design Input File_V25-00-SUMMER.xlsx";
+Design_Input_Filename = "Design Input File_V25-00-WingAR.xlsx";
 
 Design_Input = readtable(Design_Input_Filename,'Sheet','Main_Input','ReadRowNames',true); %Read in Aircraft Geometry File
 Count = height(Design_Input); %Number of different aircraft configurations in design input file
@@ -176,9 +176,10 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 
 %% sensitivity modeling
 %the exact name of the variable you want to model sensitivity of:
+%OPTIONS:'AR_w','Taper_w','Sref_w', 'Length_f','Dia_f', Thick_W
 SensVar = 'AR_w';
 %the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
-ModelRow = 3; 
+ModelRow = 1; 
 
 Plot_Sensitivity_Data = 1;
  [SensitivityData] = ...
@@ -187,9 +188,9 @@ Plot_Sensitivity_Data = 1;
 
 %% Calculations - Stability Model (NOTE: THIS WORKS FOR GLIDER)
 % Call Static Stability Function
-    Plot_Stability_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 1100 - 1199)
-    %[Boost_Initial_Stab,Boost_75_Stab,Boost_50_Stab,Boost_25_Stab,Boost_Empty_Stab,Glide_Stab,STAB_SM_SUMMARY,STAB_Xcg_SUMMARY,STAB_Xnp_SUMMARY,STAB_Vh_SUMMARY,STAB_Vv_SUMMARY,STAB_GLIDE_h1_SUMMARY]...
-    %    = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data);
+    Plot_Stability_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 1100 - 1199)
+    [Boost_Initial_Stab,Boost_75_Stab,Boost_50_Stab,Boost_25_Stab,Boost_Empty_Stab,Glide_Stab,STAB_SM_SUMMARY,STAB_Xcg_SUMMARY,STAB_Xnp_SUMMARY,STAB_Vh_SUMMARY,STAB_Vv_SUMMARY,STAB_GLIDE_h1_SUMMARY]...
+        = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data);
 
 %% Integrated Design and Trade Study Plots (2000 series plots)
     

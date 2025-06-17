@@ -37,7 +37,7 @@ Re_Table = cell(n,1);
 
 
 switch SensVar
-    case {'AR_w','Taper_w','Sref_w'}
+    case {'AR_w','Taper_w','Sref_w',}
         Design_Mod = repmat(Design_Input,n,1); %prealocates all of the modified Design_Inputs
         apogee = ones(n,1)*17.5;  %for glideDescent.m
         for i = 1:n
@@ -52,16 +52,17 @@ switch SensVar
             [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
                 DragPolarV(Parasite_Drag_Data_Mod{i},InducedDrag_Data, InducedDrag_Model_Names,Design_Mod(i,:),AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,1,0);
             
-            [LD_mod1,~,~,~] = ...
+            [LD_mod1,LD_mod2,LD_mod3] = ...
                 LD(Benchmark,DragPolar_mod1,DragPolar_mod2,DragPolar_mod3,WingLiftCurve,WingDragCurve,AoA_Count,1,0);
 
             [Weight_Data,~] = ...
                 Weight(Design_Mod(i,:),1,WingGeo_Data,Airfoil,Material_Data,Component_Data,9.81,0);
             
  
-            [GlideData_Mod(i,:)] = GlideDescent(LD_mod1, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
+            [GlideData_Mod(i,:)] = GlideDescent(LD_mod3, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model          
 
             secWing(i) = computeSecWing(Design_Mod(i,:), Airfoil, Material_Data);
+            
 
         end
 
@@ -71,10 +72,8 @@ switch SensVar
 
         for i = 1:n
             Design_Mod(i,:).(SensVar)(1) = SensVarRange(i);
-            [WingLiftModel,AoA,AoA_Count,AirfoilLiftCurve,WingLiftCurve,WingDragCurve] =...
-                    WingLiftDrag(Design_Mod(i,:),Airfoil,1,Benchmark,Plot_Wing_Data); 
 
-                        [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
+            [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
               ParasiteDrag(Design_Mod(i,:), Airfoil, WingGeo_Data, ATMOS, 1, 0);
 
             [InducedDrag_Data,InducedDrag_Model_Names] = ...
@@ -83,26 +82,46 @@ switch SensVar
             [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
                 DragPolarV(Parasite_Drag_Data_Mod{i},InducedDrag_Data, InducedDrag_Model_Names,Design_Mod(i,:),AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil,Benchmark,1,0);
             
-            [LD_mod1,~,~,~] = ...
+            [LD_mod1,LD_mod2,LD_mod3] = ...
                 LD(Benchmark,DragPolar_mod1,DragPolar_mod2,DragPolar_mod3,WingLiftCurve,WingDragCurve,AoA_Count,1,0);
 
             [Weight_Data,~] = ...
                 Weight(Design_Mod(i,:),1,WingGeo_Data,Airfoil,Material_Data,Component_Data,9.81,0);
             
+ 
+            [GlideData_Mod(i,:)] = GlideDescent(LD_mod3, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
 
-            [GlideData_Mod(i,:)] = GlideDescent(LD_mod1, apogee, Design_Mod(i,:), ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
-
-            secFuse(i) = computeSecFuse(Design_Mod(i,:), Airfoil, Material_Data);
+            secFuse(i) = computeSecFuse(Design_Mod(i,:), Material_Data);
         end
         
     case {'Thick_w'}
         Airfoil_Mod = repmat(Airfoil,n,1); %prealocates all of the modified Design_Inputs
+        apogee = ones(n,1)*17.5; 
 
         for i = 1:n
             Airfoil_Mod(i,:).(SensVar)(1) = SensVarRange(i);
 
+            
+            [WingLiftModel,AoA,AoA_Count,AirfoilLiftCurve,WingLiftCurve,WingDragCurve] =...
+                                WingLiftDrag(Design_Input,Airfoil_Mod(i,:),1,Benchmark,Plot_Wing_Data); 
+
             [Parasite_Drag_Data_Mod{i}, FF_Table{i}, Q_Table{i}, Re_Table{i}] = ...
               ParasiteDrag(Design_Input, Airfoil_Mod(i,:), WingGeo_Data, ATMOS, 1, 0);
+
+            [InducedDrag_Data,InducedDrag_Model_Names] = ...
+                InducedDrag(Design_Input,WingLiftModel,WingLiftCurve,WingDragCurve,WingGeo_Data,Parasite_Drag_Data_Mod{i},1,Benchmark,0);
+
+            [DragPolar_mod1,DragPolar_mod2,DragPolar_mod3] = ...
+                DragPolarV(Parasite_Drag_Data_Mod{i},InducedDrag_Data, InducedDrag_Model_Names,Design_Input,AoA_Count,WingLiftCurve,WingDragCurve,AirfoilLiftCurve,Airfoil_Mod(i,:),Benchmark,1,0);
+            
+            [LD_mod1,~,~,~] = ...
+                LD(Benchmark,DragPolar_mod1,DragPolar_mod2,DragPolar_mod3,WingLiftCurve,WingDragCurve,AoA_Count,1,0);
+
+            [Weight_Data,~] = ...
+                Weight(Design_Input,1,WingGeo_Data,Airfoil_Mod(i,:),Material_Data,Component_Data,9.81,0);
+            
+
+            [GlideData_Mod(i,:)] = GlideDescent(LD_mod1, apogee,Design_Input, ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,1,0); %Must select LD of your best model
 
             secWing(i) = computeSecWing(Design_Input, Airfoil_Mod(i,:), Material_Data);
         end

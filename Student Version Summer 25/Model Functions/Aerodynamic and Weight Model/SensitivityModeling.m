@@ -1,5 +1,5 @@
 function [SensitivityData] =...
-    SensitivityModeling(Design_Input, Airfoil, SensVar, SensVarRange, n, Material_Data, Parasite_Drag_Data, GlideData, Plot_Sensitivity_Data)
+    SensitivityModeling(Design_Input, Airfoil, SensVar, SensVarRange, n, Material_Data, Parasite_Drag_Data, GlideData, wingVars, fuseVars, componentDataVars, Plot_Sensitivity_Data)
 
 %% Sensitivity Data Summary:
 % takes in all data and a variable that we will be performing sensitivity
@@ -21,12 +21,6 @@ function [SensitivityData] =...
   secFuse = repmat(struct( ...
     'V_max',[], 'W_max',[]), n,1);
 
-
-
-apogee = ones(n,1)*17.5;  %for glideDescent.m
-wingVars = {'AR_w','Taper_w','Sref_w','Thick_w', "AR_h1"};   % whatever you use
-fuseVars = {'Fuse_Mat','Length_f','Dia_f','Amax_f','Abase_f'};
-      
 switch SensVar
     case wingVars
         for i=1:n
@@ -37,6 +31,7 @@ switch SensVar
         for i = 1:n
             secFuse(i) = computeSecFuse(Design_Input(i,:), Airfoil(i, :), Material_Data);
         end
+    case componentDataVars
 
     otherwise
         error('SensitivityModeling:UnknownVar',...

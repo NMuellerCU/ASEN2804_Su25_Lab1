@@ -56,13 +56,23 @@ Component_Data = readtable(Design_Input_Filename,'Sheet','Component_Data'); %Rea
 doSensitivityAnalysis = 1;
 
 if doSensitivityAnalysis == 1
-    SensVar = 'AR_w';
+    wingVars = {'AR_w','Taper_w','Sref_w','Thick_w', "AR_h1"};   % whatever you use
+    fuseVars = {'Fuse_Mat','Length_f','Dia_f','Amax_f','Abase_f'};
+    componentDataVars = {'X_LE_wing', 'X_LE_h1', 'X_LE_v1', 'X_LE_v2'};
+
+    SensVar = 'X_LE_wing';
     %the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
     ModelRow = 1; 
 
     Design_Input = Design_Input(ModelRow,:);
 
-    baseVal = double(Design_Input.(SensVar));
+    switch SensVar
+        case componentDataVars
+            baseVal = double(Component_Data.(SensVar));
+        otherwise 
+            baseVal = double(Design_Input.(SensVar));
+    end
+
 
     %THIS IS THE RANGE YOU CHOSE, please modify this if you want a different
     %range (Note: its in percent, ex: -0.8 is -80% of the original value)
@@ -72,13 +82,21 @@ if doSensitivityAnalysis == 1
     n_sens_var = numel(SensVarRange);
 
     Design_Input = repmat(Design_Input, n_sens_var, 1);
-
-    for i = 1:length(SensVarRange)
-        Design_Input.(SensVar)(i) = SensVarRange(i);
-    end
-
     Airfoil = repmat(Airfoil, n_sens_var, 1);
     Component_Data = repmat(Component_Data, n_sens_var, 1);
+
+
+    switch SensVar
+        case componentDataVars
+            for i = 1:length(SensVarRange)
+                Component_Data.(SensVar)(i) = SensVarRange(i);
+            end
+        otherwise
+            for i = 1:length(SensVarRange)
+                Design_Input.(SensVar)(i) = SensVarRange(i);
+            end
+
+    end
 end
 
 Count = height(Design_Input); %Number of different aircraft configurations in design input file
@@ -211,7 +229,7 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 if doSensitivityAnalysis == 1
     Plot_Sensitivity_Data = 1;
      [SensitivityData] = ...
-         SensitivityModeling(Design_Input,Airfoil,SensVar, SensVarRange, n_sens_var, Material_Data, Parasite_Drag_Data, GlideData, Plot_Sensitivity_Data);
+         SensitivityModeling(Design_Input,Airfoil,SensVar, SensVarRange, n_sens_var, Material_Data, Parasite_Drag_Data, GlideData, wingVars, fuseVars, componentDataVars, Plot_Sensitivity_Data);
 end
 
 %% Calculations - Stability Model (NOTE: THIS WORKS FOR GLIDER)

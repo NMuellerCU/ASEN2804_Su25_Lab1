@@ -1,5 +1,5 @@
 function [Boost_Initial_Stab,Boost_75_Stab,Boost_50_Stab,Boost_25_Stab,Boost_Empty_Stab,Glide_Stab,STAB_SM_SUMMARY,STAB_Xcg_SUMMARY,STAB_Xnp_SUMMARY,STAB_Vh_SUMMARY,STAB_Vv_SUMMARY,STAB_GLIDE_h1_SUMMARY]...
-    = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data)
+    = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data, SensVar,SensVarRange)
 %% Weight Model Summary 
 % This is a Instructor team- only function for use in calculating static
 % margin and other stability terms for designs
@@ -208,10 +208,10 @@ if Plot_Stability_Data == 1
         set(0,'DefaultAxesColorOrder',cmap) % overwrites default color order to what we just specified
 
     for n = 1:Count;
-        plot(linspace(1,6,6),STAB_Xcg_SUMMARY{n,:},DisplayName = [Design_Input.Config{n}, ' Xcg'],Marker="o",LineStyle="-",MarkerSize=10);
+        plot(linspace(1,6,6),STAB_Xcg_SUMMARY{n,:},DisplayName = sprintf('%s = %.2f Xcg',SensVar, SensVarRange(n)),Marker="o",LineStyle="-",MarkerSize=10);
     end
     for n = 1:Count;
-        plot(linspace(1,6,6),STAB_Xnp_SUMMARY{n,:},DisplayName = [Design_Input.Config{n}, ' Xnp'],Marker="+",LineStyle="--",MarkerSize=10);
+        plot(linspace(1,6,6),STAB_Xnp_SUMMARY{n,:},DisplayName =sprintf('%s = %.2f Xnp',SensVar, SensVarRange(n)),Marker="+",LineStyle="--",MarkerSize=10);
     end
     title('Longitudinal CG, NP Location Travel');
     ylabel('Distance from Aircraft Nose [m]');
@@ -228,8 +228,8 @@ if Plot_Stability_Data == 1
     cmap = colormap(hsv(Count)); % Sets color map for the specific number of variables (that last part is important)
     set(0,'DefaultAxesColorOrder',cmap) % overwrites default color order to what we just specified
 
-    for n = 1:Count;
-        plot(linspace(1,6,6),STAB_SM_SUMMARY{n,:},DisplayName = [Design_Input.Config{n}, ' SM'],Marker="x",MarkerSize=10);
+    for n = 1:Count
+        plot(linspace(1,6,6),STAB_SM_SUMMARY{n,:},DisplayName = sprintf('%s = %.2f SM',SensVar, SensVarRange(n)),Marker="x",MarkerSize=10);
     end
     title('Longitudinal Static Margin Shift');
     xticks([1 2 3 4 5 6])

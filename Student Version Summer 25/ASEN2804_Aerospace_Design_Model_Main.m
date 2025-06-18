@@ -56,7 +56,7 @@ Component_Data = readtable(Design_Input_Filename,'Sheet','Component_Data'); %Rea
 doSensitivityAnalysis = 1;
 
 if doSensitivityAnalysis == 1
-    SensVar = 'AR_h1';
+    SensVar = 'AR_w';
     %the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
     ModelRow = 1; 
 
@@ -218,7 +218,7 @@ end
 % Call Static Stability Function
     Plot_Stability_Data = 1; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 1100 - 1199)
     [Boost_Initial_Stab,Boost_75_Stab,Boost_50_Stab,Boost_25_Stab,Boost_Empty_Stab,Glide_Stab,STAB_SM_SUMMARY,STAB_Xcg_SUMMARY,STAB_Xnp_SUMMARY,STAB_Vh_SUMMARY,STAB_Vv_SUMMARY,STAB_GLIDE_h1_SUMMARY]...
-        = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data);
+        = Stability(Design_Input, Count, CG_Data, WingGeo_Data, GlideData, WingLiftModel, Component_Data,Plot_Stability_Data, SensVar, SensVarRange);
 
 %% Integrated Design and Trade Study Plots (2000 series plots)
     

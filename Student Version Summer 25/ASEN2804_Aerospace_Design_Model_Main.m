@@ -46,39 +46,42 @@ Design_Input_Filename = "Design Input File_V25-00-WingAR.xlsx";
 
 Design_Input = readtable(Design_Input_Filename,'Sheet','Main_Input','ReadRowNames',true); %Read in Aircraft Geometry File
 
-%% Sensitivity
-SensVar = 'AR_h1';
-%the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
-ModelRow = 1; 
-
-Design_Input = Design_Input(ModelRow,:);
-
-baseVal = double(Design_Input.(SensVar));
-
-%THIS IS THE RANGE YOU CHOSE, please modify this if you want a different
-%range (Note: its in percent, ex: -0.8 is -80% of the original value)
-pct_sens = (-0.8:0.2:1.0)';
-SensVarRange = baseVal*(1+pct_sens);
-
-n_sens_var = numel(SensVarRange);
-
-Design_Input = repmat(Design_Input, n_sens_var, 1);
-
-for i = 1:length(SensVarRange)
-    Design_Input.(SensVar)(i) = SensVarRange(i);
-end
-
-Count = height(Design_Input); %Number of different aircraft configurations in design input file
-
 % Import Airfoil Data File
 Airfoil = readtable(Design_Input_Filename,'Sheet','Airfoil_Data'); %Read in Airfoil Data
-
-Airfoil = repmat(Airfoil, n_sens_var, 1);
 
 % Import Component Weight and Location Data File
 Component_Data = readtable(Design_Input_Filename,'Sheet','Component_Data'); %Read in Component Data
 
-Component_Data = repmat(Component_Data, n_sens_var, 1);
+%% Sensitivity
+doSensitivityAnalysis = 1;
+
+if doSensitivityAnalysis == 1
+    SensVar = 'AR_h1';
+    %the row of the model you want to use, (ex: in the original data 3 was the boeing 737)
+    ModelRow = 1; 
+
+    Design_Input = Design_Input(ModelRow,:);
+
+    baseVal = double(Design_Input.(SensVar));
+
+    %THIS IS THE RANGE YOU CHOSE, please modify this if you want a different
+    %range (Note: its in percent, ex: -0.8 is -80% of the original value)
+    pct_sens = (-0.8:0.2:1.0)';
+    SensVarRange = baseVal*(1+pct_sens);
+
+    n_sens_var = numel(SensVarRange);
+
+    Design_Input = repmat(Design_Input, n_sens_var, 1);
+
+    for i = 1:length(SensVarRange)
+        Design_Input.(SensVar)(i) = SensVarRange(i);
+    end
+
+    Airfoil = repmat(Airfoil, n_sens_var, 1);
+    Component_Data = repmat(Component_Data, n_sens_var, 1);
+end
+
+Count = height(Design_Input); %Number of different aircraft configurations in design input file
 
 % Import Benchmark Aircraft Truth Data
 Benchmark = readtable(Design_Input_Filename,'Sheet','Benchmark_Truth'); %Read in Benchmark "Truth" Data for model validation only
@@ -191,7 +194,7 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
     [GlideData] = GlideDescent(LD_Model, apogee, Design_Input, ATMOS, Weight_Data, WingLiftModel, WingLiftCurve,WingDragCurve,Count,Plot_Glide_Data); %Must select LD of your best model
 
     
-    %% Calculations - Dynamic Models FOR ROCKET PORTION - LEAVE COMMENTED OUT FOR GLIDER PORTION
+%% Calculations - Dynamic Models FOR ROCKET PORTION - LEAVE COMMENTED OUT FOR GLIDER PORTION
 % Call Thrust Model
     %Plot_Thrust_Data = 0; %Set to 0 to suppress plots for this function or 1 to output plots (Fig 800 - 899)
     %[ThrustCurves, Time, ThrustStruct] = Thrust(Plot_Thrust_Data);
@@ -205,10 +208,11 @@ Truth_Data_Boeing = readtable(Truth_Data_Filename, 'Sheet','Boeing 747 Drag Pola
 %the exact name of the variable you want to model sensitivity of:
 %OPTIONS:'AR_w','Taper_w','Sref_w', 'Length_f','Dia_f', Thick_W
 
-Plot_Sensitivity_Data = 1;
- [SensitivityData] = ...
-     SensitivityModeling(Design_Input,Airfoil,SensVar, SensVarRange, n_sens_var, Material_Data, Parasite_Drag_Data, GlideData, Plot_Sensitivity_Data);
-
+if doSensitivityAnalysis == 1
+    Plot_Sensitivity_Data = 1;
+     [SensitivityData] = ...
+         SensitivityModeling(Design_Input,Airfoil,SensVar, SensVarRange, n_sens_var, Material_Data, Parasite_Drag_Data, GlideData, Plot_Sensitivity_Data);
+end
 
 %% Calculations - Stability Model (NOTE: THIS WORKS FOR GLIDER)
 % Call Static Stability Function
